@@ -66,12 +66,43 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 
 ```
 src/
-├── components/
-├── lib/
+├── components/           # Reusable UI components (e.g., Navbar, Footer, Buttons)
+│   ├── Navbar/
+│   ├── Footer/
+│   └── StretchCard/      # (new) Single card view for a stretch, reusable
+│
+├── pages/                # Route-level components/screens
+│   ├── Home/
+│   ├── Account/
+│   ├── Stretches/        # Includes AllStretches, SingleStretch
+│   ├── Routines/         # Includes AllRoutines, SingleRoutine
+│   ├── Auth/             # Login, Signup
+│   └── PoseTrainer/      # New replacement for Teachable
+│
+├── store/                # Redux logic (slices, thunks, etc.)
+│   ├── cameraSlice.ts
+│   ├── routineSlice.ts
+│   ├── stretchSlice.ts
+│   └── index.ts
+│
+├── styles/               # Global SCSS variables and resets
+│   ├── _variables.scss
+│   ├── _reset.scss
+│   └── main.scss
+│
+├── utils/                # Helper functions (e.g., pose score checker)
+│   └── poseUtils.ts
+│
+├── lib/                  # External integrations and clients
 │   └── supabase.ts
-├── pages/
-├── styles/
-└── App.tsx
+│
+├── routes/               # Optional: central route config or route guards
+│   └── index.tsx
+│
+├── App.tsx
+├── main.tsx
+└── vite-env.d.ts
+
 ```
 
 ---
