@@ -1,54 +1,95 @@
-# React + TypeScript + Vite
+# 🚧 Bendwell2.0 – Under Construction
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Bendwell2.0 is a full rebuild of the original Bendwell app https://bendwell2025.netlify.app/— a web-based fitness assistant that helps users stretch and track their routines using pose detection technology. This version upgrades the stack to modern tooling with performance, accuracy, and scalability in mind.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🧠 Project Overview
 
-## Expanding the ESLint configuration
+Bendwell2.0 aims to:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Improve performance by migrating from JavaScript to TypeScript
+- Replace legacy Teachable Machine pose models with TensorFlow's MoveNet or BlazePose
+- Maintain Supabase as the backend for user routines and stretch data
+- Create a fast, responsive frontend using Vite + React + SCSS
+- Lay the foundation for future AI-powered pose feedback
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- [React](https://react.dev/) (with Vite)
+- [TypeScript](https://www.typescriptlang.org/)
+- [SCSS](https://sass-lang.com/)
+- [@tensorflow-models/pose-detection](https://github.com/tensorflow/tfjs-models/tree/master/pose-detection) _(planned)_
+
+### Backend
+
+- [Supabase](https://supabase.io/) (PostgreSQL, Auth, Realtime)
+- Will research best backend technologies designed best for TS
+
+### Deployment
+
+- Netlify (Frontend)
+- Supabase (Backend API & DB)
+
+---
+
+## 🚀 Setup Instructions
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/albertohuerta22/bendwell2.0.git
+cd bendwell2.0
+
+# 2. Install dependencies
+npm install
+
+# 3. Run the development server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 🔐 Environment Variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env` file at the root:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
 ```
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+---
+
+## 🧭 Folder Structure (WIP)
+
+```
+src/
+├── components/
+├── lib/
+│   └── supabase.ts
+├── pages/
+├── styles/
+└── App.tsx
+```
+
+---
+
+## 📌 Roadmap
+
+- [x] Create Vite + TypeScript project
+- [x] Push to GitHub
+- [ ] Rebuild AllStretches component in TS
+- [ ] Replace Teachable Machine with MoveNet
+- [ ] Create model training or keypoint matcher
+- [ ] Migrate existing user/stretch/routine data to Supabase
+- [ ] Add unit testing (Vitest or Jest)
+- [ ] Polish SCSS and accessibility
+- [ ] Final deployment with optimized build
+
+---
+
+## 📄 License
+
+This project is for personal and educational purposes only. Future licensing TBD.
