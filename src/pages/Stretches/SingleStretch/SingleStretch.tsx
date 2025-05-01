@@ -42,7 +42,7 @@ const SingleStretch = () => {
   }, [id]);
 
   const handleClick = () => {
-    navigate('/testwindow');
+    navigate('/stretchwindow');
   };
 
   if (loading || !stretch) return <p>Loading...</p>;

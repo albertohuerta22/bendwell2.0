@@ -5,6 +5,7 @@ import CompleteAccount from '../pages/Auth/CompleteAccount';
 import Login from '../pages/Auth/Login';
 import AllStretches from '../pages/Stretches/AllStretches/AllStretches';
 import SingleStretch from '../pages/Stretches/SingleStretch/SingleStretch';
+import StretchWindow from '../pages/StretchWindow/StretchWindow';
 
 const AppRoutes = () => {
   return (
@@ -18,6 +19,8 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/stretches" element={<AllStretches />} />
       <Route path="/stretches/:id" element={<SingleStretch />} />
+
+      <Route path="/stretchwindow" element={<StretchWindow />} />
     </Routes>
   );
 };

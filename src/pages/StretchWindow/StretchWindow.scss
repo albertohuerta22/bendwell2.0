@@ -1,0 +1,23 @@
+.stretch-window-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+
+  .canvas {
+    border: 1px solid #ccc;
+    margin-top: 20px;
+  }
+
+  .button,
+  .button-status {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+
+  .status {
+    font-size: 18px;
+    margin-top: 20px;
+  }
+}

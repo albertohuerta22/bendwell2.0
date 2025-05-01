@@ -28,7 +28,12 @@ const Home = () => {
       </section>
 
       <section className="home__info">
-        {/* <StretchGraphic /> */}
+        <img
+          src="/Frame.png"
+          alt="stretch-illustration"
+          className="home__info-img"
+        />
+
         <div className="home__info-tag">
           <h2>
             Say goodbye to stiff necks and aching backs, and say hello to
