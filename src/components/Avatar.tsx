@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import supabase from '../lib/supabase';
-import { VisuallyHidden } from '@reach/visually-hidden';
 
 interface AvatarProps {
   url: string | null;
@@ -76,15 +75,24 @@ const Avatar = ({ url, size, onUpload, className = '' }: AvatarProps) => {
           <label className="button primary block" htmlFor="single">
             Upload an avatar
           </label>
-          <VisuallyHidden>
-            <input
-              type="file"
-              id="single"
-              accept="image/*"
-              onChange={uploadAvatar}
-              disabled={uploading}
-            />
-          </VisuallyHidden>
+          <input
+            type="file"
+            id="single"
+            accept="image/*"
+            onChange={uploadAvatar}
+            disabled={uploading}
+            style={{
+              position: 'absolute',
+              width: '1px',
+              height: '1px',
+              padding: 0,
+              margin: '-1px',
+              overflow: 'hidden',
+              clip: 'rect(0, 0, 0, 0)',
+              whiteSpace: 'nowrap',
+              border: 0,
+            }}
+          />
         </>
       )}
     </div>

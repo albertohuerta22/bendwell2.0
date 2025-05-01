@@ -2,6 +2,8 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import FacebookIcon from '@mui/icons-material/Facebook';
 
+import './Footer.scss';
+
 const Footer = () => {
   return (
     <div className="footer">

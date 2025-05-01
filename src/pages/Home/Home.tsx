@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 // import StretchGraphic from '../../components/StretchGraphic/StretchGraphic';
+import './Home.scss';
 
 const Home = () => {
   const navigate = useNavigate();
