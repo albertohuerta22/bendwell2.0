@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { initDetector, getPose } from '../../lib/pose/poseEstimator';
 import type { Keypoint } from '@tensorflow-models/pose-detection';
-import * as tmPose from '@teachablemachine/pose';
+import {
+  predictStretch,
+  loadClassifierFromJSON,
+} from '../../lib/classifier/knnStretchClassifier';
+
+import { getJsonFilenameFromLabel } from '../../lib/utils/format';
 
 import './StretchWindow.scss';
 
@@ -11,16 +16,9 @@ const StretchWindow = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [modelLoaded, setModelLoaded] = useState(false);
-  const [tmModel, setTmModel] = useState<tmPose.CustomPoseNet | null>(null);
 
-  // Load Teachable Machine model (from public/tm-model folder)
-  const loadTMModel = async () => {
-    const URL = '/tm-model/';
-    const modelURL = URL + 'model.json';
-    const metadataURL = URL + 'metadata.json';
-    const tm = await tmPose.load(modelURL, metadataURL);
-    setTmModel(tm);
-  };
+  const location = useLocation();
+  const stretchName = location.state?.stretchName || 'Unknown';
 
   useEffect(() => {
     const setupCamera = async () => {
@@ -43,7 +41,6 @@ const StretchWindow = () => {
 
     const loadAllModels = async () => {
       await initDetector();
-      await loadTMModel();
       setModelLoaded(true);
     };
 
@@ -52,17 +49,37 @@ const StretchWindow = () => {
   }, []);
 
   useEffect(() => {
+    const loadDataset = async () => {
+      const filename = getJsonFilenameFromLabel(stretchName);
+
+      try {
+        const res = await fetch(`/knn-data/${filename}`);
+        if (!res.ok) throw new Error(`Missing file: ${filename}`);
+        const json = await res.json();
+        loadClassifierFromJSON(json);
+      } catch (err) {
+        console.warn(
+          `⚠️ No dataset found for: ${stretchName}. Skipping prediction.`,
+          err
+        );
+      }
+    };
+
+    loadDataset();
+  }, [stretchName]);
+
+  useEffect(() => {
     let animationFrameId: number;
 
     const detectPose = async () => {
-      if (!videoRef.current || !canvasRef.current || !modelLoaded || !tmModel)
-        return;
-
       if (
+        !videoRef.current ||
+        !canvasRef.current ||
+        !modelLoaded ||
         videoRef.current.videoWidth === 0 ||
         videoRef.current.videoHeight === 0
       ) {
-        requestAnimationFrame(detectPose);
+        animationFrameId = requestAnimationFrame(detectPose);
         return;
       }
 
@@ -72,22 +89,17 @@ const StretchWindow = () => {
       if (ctx && pose) {
         ctx.clearRect(0, 0, 500, 500);
         drawKeypoints(pose.keypoints, ctx);
+      }
 
-        // 🔍 Normalize and predict
-        const input = new Float32Array(
-          normalizeKeypoints(pose.keypoints, 500, 500)
-        );
-        const prediction = await tmModel.predict(input);
+      if (pose?.keypoints) {
+        const input = normalizeKeypoints(pose.keypoints, 500, 500);
+        const predictedLabel = await predictStretch(input);
 
-        // Log highest confidence result
-        const topResult = prediction.reduce((prev, current) =>
-          prev.probability > current.probability ? prev : current
-        );
-        console.log(
-          'Predicted stretch:',
-          topResult.className,
-          topResult.probability.toFixed(2)
-        );
+        if (predictedLabel === stretchName) {
+          console.log('✅ Correct Pose');
+        } else {
+          console.log('❌ Pose Not Recognized');
+        }
       }
 
       animationFrameId = requestAnimationFrame(detectPose);
@@ -100,7 +112,7 @@ const StretchWindow = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [modelLoaded, tmModel]);
+  }, [modelLoaded, stretchName]);
 
   const normalizeKeypoints = (
     keypoints: Keypoint[],

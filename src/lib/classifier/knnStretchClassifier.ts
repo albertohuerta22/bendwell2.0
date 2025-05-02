@@ -57,3 +57,10 @@ export function getExampleCount(label: string): number {
   const tensor = dataset[label];
   return tensor ? tensor.shape[0] : 0;
 }
+
+export function loadClassifierFromJSON(json: Record<string, number[][]>) {
+  const dataset = Object.fromEntries(
+    Object.entries(json).map(([label, data]) => [label, tf.tensor2d(data)])
+  );
+  classifier.setClassifierDataset(dataset);
+}
