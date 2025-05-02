@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { initDetector, getPose } from '../../lib/pose/poseEstimator';
 import type { Keypoint } from '@tensorflow-models/pose-detection';
+import * as tmPose from '@teachablemachine/pose';
+
 import './StretchWindow.scss';
 
 const StretchWindow = () => {
@@ -9,6 +11,16 @@ const StretchWindow = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [modelLoaded, setModelLoaded] = useState(false);
+  const [tmModel, setTmModel] = useState<tmPose.CustomPoseNet | null>(null);
+
+  // Load Teachable Machine model (from public/tm-model folder)
+  const loadTMModel = async () => {
+    const URL = '/tm-model/';
+    const modelURL = URL + 'model.json';
+    const metadataURL = URL + 'metadata.json';
+    const tm = await tmPose.load(modelURL, metadataURL);
+    setTmModel(tm);
+  };
 
   useEffect(() => {
     const setupCamera = async () => {
@@ -29,22 +41,23 @@ const StretchWindow = () => {
       videoRef.current!.play();
     };
 
-    const loadModel = async () => {
+    const loadAllModels = async () => {
       await initDetector();
+      await loadTMModel();
       setModelLoaded(true);
     };
 
     setupCamera();
-    loadModel();
+    loadAllModels();
   }, []);
 
   useEffect(() => {
     let animationFrameId: number;
 
     const detectPose = async () => {
-      if (!videoRef.current || !canvasRef.current || !modelLoaded) return;
+      if (!videoRef.current || !canvasRef.current || !modelLoaded || !tmModel)
+        return;
 
-      // 🔒 Only proceed if video frame has content
       if (
         videoRef.current.videoWidth === 0 ||
         videoRef.current.videoHeight === 0
@@ -59,6 +72,22 @@ const StretchWindow = () => {
       if (ctx && pose) {
         ctx.clearRect(0, 0, 500, 500);
         drawKeypoints(pose.keypoints, ctx);
+
+        // 🔍 Normalize and predict
+        const input = new Float32Array(
+          normalizeKeypoints(pose.keypoints, 500, 500)
+        );
+        const prediction = await tmModel.predict(input);
+
+        // Log highest confidence result
+        const topResult = prediction.reduce((prev, current) =>
+          prev.probability > current.probability ? prev : current
+        );
+        console.log(
+          'Predicted stretch:',
+          topResult.className,
+          topResult.probability.toFixed(2)
+        );
       }
 
       animationFrameId = requestAnimationFrame(detectPose);
@@ -71,7 +100,18 @@ const StretchWindow = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [modelLoaded]);
+  }, [modelLoaded, tmModel]);
+
+  const normalizeKeypoints = (
+    keypoints: Keypoint[],
+    width: number,
+    height: number
+  ): number[] => {
+    return keypoints.flatMap((k) => [
+      (width - k.x) / width, // Flip X to match mirror view
+      k.y / height,
+    ]);
+  };
 
   const drawKeypoints = (
     keypoints: Keypoint[],
@@ -82,7 +122,6 @@ const StretchWindow = () => {
     keypoints.forEach((keypoint) => {
       if ((keypoint.score ?? 0) > 0.5) {
         const flippedX = width - keypoint.x;
-
         ctx.beginPath();
         ctx.arc(flippedX, keypoint.y, 5, 0, 2 * Math.PI);
         ctx.fillStyle = 'aqua';
@@ -105,7 +144,7 @@ const StretchWindow = () => {
             top: 0,
             left: 0,
             zIndex: 1,
-            transform: 'scaleX(-1)', // optional: flip webcam for mirror view
+            transform: 'scaleX(-1)', // mirror view
           }}
           autoPlay
           muted
@@ -126,7 +165,7 @@ const StretchWindow = () => {
 
       <div id="label-container">
         <h3 className="status">
-          {modelLoaded ? 'Pose detection active!' : 'Loading MoveNet...'}
+          {modelLoaded ? 'Pose detection active!' : 'Loading models...'}
         </h3>
         <button
           className="button-status"

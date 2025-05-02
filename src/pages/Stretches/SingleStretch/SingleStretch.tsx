@@ -90,6 +90,16 @@ const SingleStretch = () => {
         <Link to="/stretches">
           <button className="view-stretches">View Stretches</button>
         </Link>
+        <button
+          onClick={() =>
+            navigate('/trainingwindow', {
+              state: { stretchName: stretch.name },
+            })
+          }
+          className="admin-train-button"
+        >
+          Train Pose Stretch
+        </button>
       </div>
     </div>
   );
