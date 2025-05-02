@@ -103,6 +103,43 @@ src/
 ├── main.tsx
 └── vite-env.d.ts
 
+## ML Integration File Overview
+
+bendwell2.0/
+├── public/
+│   ├── knn-data/                         # ✅ Stores exported .json files here for each stretch
+│   │   ├── neck-stretch-l.json
+│   │   ├── neck-stretch-r.json
+│   │   ├── calf-stretch-l.json
+│   │   └── oblique-reach-r.json
+│   └── index.html
+│
+├── src/
+│   ├── lib/
+│   │   ├── classifier/
+│   │   │   └── knnStretchClassifier.ts   # ✅ Shared KNN logic for adding/predicting/loading
+│   │   └── pose/
+│   │       └── poseEstimator.ts          # MoveNet detector wrapper
+│
+│   ├── pages/
+│   │   ├── StretchWindow/
+│   │   │   └── StretchWindow.tsx         # ✅ Loads a per-stretch .json and runs prediction
+│   │   ├── TrainingWindow/
+│   │   │   └── TrainingWindow.tsx        # ✅ Used to collect and export labeled examples
+│   │   └── Stretches/
+│   │       └── SingleStretch.tsx        # Entry point to StretchWindow or TrainingWindow
+│
+│   ├── routes/
+│   │   └── index.tsx                     # Routing config
+│
+│   ├── styles/                           # Global + scoped SCSS styles
+│   └── App.tsx
+│
+├── .env
+├── package.json
+└── README.md
+
+
 ```
 
 ---
@@ -111,13 +148,21 @@ src/
 
 - [x] Create Vite + TypeScript project
 - [x] Push to GitHub
-- [ ] Rebuild AllStretches component in TS
-- [ ] Replace Teachable Machine with MoveNet
+- [x] Rebuild AllStretches component in TS
+- [x] Replace Posenet with MoveNet
 - [ ] Create model training or keypoint matcher
 - [ ] Migrate existing user/stretch/routine data to Supabase
+- [ ] Improve UI for Bendwell
 - [ ] Add unit testing (Vitest or Jest)
 - [ ] Polish SCSS and accessibility
 - [ ] Final deployment with optimized build
+
+## Stretch Goals
+
+- [ ] Research alternatives to KNN algo
+- [ ] Research other TF models for additional stretches
+- [ ] Integrate metrics for calculating daily stretches
+- [ ] Integrate AI chatbot for help on improving stretching
 
 ---
 
