@@ -174,7 +174,17 @@ const Routines = () => {
               <button onClick={() => setEditingId(routine.id)}>
                 Edit Name
               </button>
-              <button onClick={() => setEditingRoutine(routine)}>
+              <button
+                onClick={() => {
+                  if (!routine.stretches || routine.stretches.length === 0) {
+                    alert(
+                      `Please add stretches to your "${routine.name}" routine first.`
+                    );
+                    return;
+                  }
+                  setEditingRoutine(routine);
+                }}
+              >
                 Edit Routine
               </button>
 
