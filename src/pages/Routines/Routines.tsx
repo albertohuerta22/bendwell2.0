@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../../lib/supabase';
+
+import RoutineEditorModal from '../../components/Modals/RoutineEditorModal/RoutineEditorModal';
+
 import './Routines.scss';
 
 interface Stretch {
@@ -35,6 +38,8 @@ const Routines = () => {
   );
   const [editingId, setEditingId] = useState<string | null>(null);
   const [routineToDelete, setRoutineToDelete] = useState<Routine | null>(null);
+
+  const [editingRoutine, setEditingRoutine] = useState<Routine | null>(null);
 
   const navigate = useNavigate();
 
@@ -169,9 +174,10 @@ const Routines = () => {
               <button onClick={() => setEditingId(routine.id)}>
                 Edit Name
               </button>
-              <button onClick={() => navigate(`/routines/${routine.id}`)}>
-                Go to Routine
+              <button onClick={() => setEditingRoutine(routine)}>
+                Edit Routine
               </button>
+
               <button onClick={() => setRoutineToDelete(routine)}>
                 Delete Routine
               </button>
@@ -179,6 +185,27 @@ const Routines = () => {
           </div>
         ))}
       </div>
+
+      {editingRoutine && (
+        <RoutineEditorModal
+          stretches={editingRoutine.stretches}
+          onClose={() => setEditingRoutine(null)}
+          onSave={(updatedStretches) => {
+            // Optional: Save updated stretch order to DB or state
+            setRoutines((prev) =>
+              prev.map((r) =>
+                r.id === editingRoutine.id
+                  ? { ...r, stretches: updatedStretches }
+                  : r
+              )
+            );
+            setEditingRoutine(null);
+          }}
+          onAddStretch={() => {
+            navigate('/stretches');
+          }}
+        />
+      )}
 
       {routineToDelete && (
         <div className="modal-overlay">
