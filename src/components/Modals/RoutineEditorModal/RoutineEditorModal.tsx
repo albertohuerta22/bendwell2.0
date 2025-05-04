@@ -80,8 +80,19 @@ const RoutineEditorModal: React.FC<RoutineEditorModalProps> = ({
             Cancel
           </button>
         </div>
-        <div className="routine-editor-trash">
-          {/* TODO: Drop to delete logic here */}
+        <div
+          className="routine-editor-trash"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={() => {
+            if (draggedIndex !== null) {
+              const updated = [...localStretches];
+              updated.splice(draggedIndex, 1); // remove the dragged item
+              setLocalStretches(updated);
+              setDraggedIndex(null);
+              setHoveredIndex(null);
+            }
+          }}
+        >
           🗑️
         </div>
       </div>

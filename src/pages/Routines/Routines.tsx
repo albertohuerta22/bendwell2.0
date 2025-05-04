@@ -191,7 +191,6 @@ const Routines = () => {
           stretches={editingRoutine.stretches}
           onClose={() => setEditingRoutine(null)}
           onSave={(updatedStretches) => {
-            // Optional: Save updated stretch order to DB or state
             setRoutines((prev) =>
               prev.map((r) =>
                 r.id === editingRoutine.id

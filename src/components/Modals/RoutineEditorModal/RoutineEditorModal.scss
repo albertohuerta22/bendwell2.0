@@ -82,3 +82,18 @@
   overflow-y: auto;
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
 }
+
+.routine-editor-trash {
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  opacity: 0.6;
+
+  &:hover,
+  &.trash-hovered {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
