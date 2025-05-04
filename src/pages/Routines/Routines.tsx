@@ -115,57 +115,71 @@ const Routines = () => {
         <button onClick={handleAddRoutine}>Add Routine</button>
       </div>
 
-      <ul className="routines__list">
+      <div className="routines__list">
         {routines.map((routine) => (
-          <li key={routine.id} className="routine__routine">
-            {editingId === routine.id ? (
-              <input
-                type="text"
-                value={routineNames[routine.id] || ''}
-                onChange={(e) =>
-                  setRoutineNames((prev) => ({
-                    ...prev,
-                    [routine.id]: e.target.value,
-                  }))
-                }
-                onBlur={() => {
-                  handleRename(routine.id, routineNames[routine.id]);
-                  setEditingId(null);
-                }}
-                autoFocus
-              />
-            ) : (
-              <div className="routines__routine-topbar">
-                <h2 className="routines__routine-name">{routine.name}</h2>
-                <div className="routines__routine-actions">
-                  <button onClick={() => setEditingId(routine.id)}>
-                    Edit Name
-                  </button>
-                  <button onClick={() => navigate(`/routines/${routine.id}`)}>
-                    Go to Routine
-                  </button>
-                  <button onClick={() => setRoutineToDelete(routine)}>
-                    Delete Routine
-                  </button>
-                </div>
-              </div>
-            )}
+          <div key={routine.id} className="routine__row">
+            <div className="routine__column routine__name">
+              {editingId === routine.id ? (
+                <input
+                  type="text"
+                  value={routineNames[routine.id] || ''}
+                  onChange={(e) =>
+                    setRoutineNames((prev) => ({
+                      ...prev,
+                      [routine.id]: e.target.value,
+                    }))
+                  }
+                  onBlur={() => {
+                    handleRename(routine.id, routineNames[routine.id]);
+                    setEditingId(null);
+                  }}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleRename(routine.id, routineNames[routine.id]);
+                      setEditingId(null);
+                    }
+                  }}
+                />
+              ) : (
+                <h2>{routine.name}</h2>
+              )}
+            </div>
 
-            {routine.stretches?.length ? (
-              <ul className="routines__stretches-list">
-                {routine.stretches.map((stretch, index) => (
-                  <li key={`${routine.id}-${stretch.id}-${index}`}>
-                    <img src={stretch.stretchimages} alt={stretch.name} />
-                    <p>{stretch.name}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>This routine has no stretches.</p>
-            )}
-          </li>
+            <div className="routine__column routine__carousel">
+              {Array.isArray(routine.stretches) &&
+              routine.stretches.length > 0 ? (
+                <div className="routine__carousel-wrapper">
+                  {routine.stretches.map((stretch, index) => (
+                    <div
+                      key={`${routine.id}-${stretch.id}-${index}`}
+                      className="routine__carousel-item"
+                    >
+                      <img src={stretch.stretchimages} alt={stretch.name} />
+                      <p>{stretch.name}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>No stretches in this routine.</p>
+              )}
+            </div>
+
+            <div className="routine__column routine__actions">
+              <button onClick={() => setEditingId(routine.id)}>
+                Edit Name
+              </button>
+              <button onClick={() => navigate(`/routines/${routine.id}`)}>
+                Go to Routine
+              </button>
+              <button onClick={() => setRoutineToDelete(routine)}>
+                Delete Routine
+              </button>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
+
       {routineToDelete && (
         <div className="modal-overlay">
           <div className="modal">

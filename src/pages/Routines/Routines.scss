@@ -170,6 +170,50 @@
     gap: 8px;
   }
 
+  .routine__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #e3f2fd;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+  }
+
+  .routine__column {
+    flex: 1;
+    padding: 0 1rem;
+  }
+
+  .routine__name {
+    flex-basis: 25%;
+    font-weight: bold;
+  }
+
+  .routine__carousel {
+    flex-basis: 50%;
+    overflow-x: auto;
+    display: flex;
+    gap: 1rem;
+  }
+
+  .routine__carousel-wrapper {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .routine__carousel-item img {
+    height: 100px;
+    border-radius: 6px;
+  }
+
+  .routine__actions {
+    flex-basis: 25%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
   .modal-overlay {
     position: fixed;
     top: 0;
