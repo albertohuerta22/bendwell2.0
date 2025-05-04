@@ -20,4 +20,18 @@
     font-size: 18px;
     margin-top: 20px;
   }
+
+  .feedback {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 1rem;
+  }
+
+  .success {
+    color: #23b54d; // green
+  }
+
+  .error {
+    color: #d9534f; // red
+  }
 }

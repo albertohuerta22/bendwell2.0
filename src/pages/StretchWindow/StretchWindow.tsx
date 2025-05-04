@@ -16,6 +16,7 @@ const StretchWindow = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [modelLoaded, setModelLoaded] = useState(false);
+  const [feedback, setFeedback] = useState('');
 
   const location = useLocation();
   const stretchName = location.state?.stretchName || 'Unknown';
@@ -96,9 +97,9 @@ const StretchWindow = () => {
         const predictedLabel = await predictStretch(input);
 
         if (predictedLabel === stretchName) {
-          console.log('✅ Correct Pose');
+          setFeedback('✅ Correct Pose');
         } else {
-          console.log('❌ Pose Not Recognized');
+          setFeedback('❌ Pose Not Recognized');
         }
       }
 
@@ -179,6 +180,18 @@ const StretchWindow = () => {
         <h3 className="status">
           {modelLoaded ? 'Pose detection active!' : 'Loading models...'}
         </h3>
+        <h3
+          className={`feedback ${
+            feedback.includes('✅')
+              ? 'success'
+              : feedback.includes('❌')
+              ? 'error'
+              : ''
+          }`}
+        >
+          {feedback}
+        </h3>
+
         <button
           className="button-status"
           onClick={() => navigate('/stretches')}
