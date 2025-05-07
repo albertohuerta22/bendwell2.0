@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import supabase from '../../../lib/supabase';
+
+//services
+import { fetchStretchById } from '../../../services/pages/stretches/SingleStretchService';
 
 import './SingleStretch.scss';
 
@@ -24,18 +26,18 @@ const SingleStretch = () => {
 
   useEffect(() => {
     const fetchStretch = async () => {
-      const { data, error } = await supabase
-        .from('stretches')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) {
-        console.error('Error fetching stretch:', error.message);
-      } else {
-        setStretch(data);
+      if (!id) {
+        console.error('Stretch ID is missing.');
+        return;
       }
-      setLoading(false);
+      try {
+        const data = await fetchStretchById(id);
+        setStretch(data);
+      } catch (error) {
+        console.error('Error fetching stretch: ', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     if (id) fetchStretch();

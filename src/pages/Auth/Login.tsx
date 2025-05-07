@@ -20,8 +20,8 @@ const Login = () => {
       });
 
       if (error) throw error;
-
-      navigate('/home');
+      //if user signs in, they go to routines
+      navigate('/routines');
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);
