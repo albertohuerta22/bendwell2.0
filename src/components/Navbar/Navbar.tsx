@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import supabase from '../../lib/supabase';
 import type { Session } from '@supabase/supabase-js';
 import './navbar.scss';
@@ -11,6 +11,8 @@ interface NavbarProps {
 
 export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
   const [session, setSession] = useState<Session | null>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -27,6 +29,16 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
       authListener.subscription.unsubscribe();
     };
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setSession(null); // manually clear session
+      navigate('/'); // redirect to landing page
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <div className="navbar-wrapper">
@@ -53,7 +65,7 @@ export default function Navbar({ menuOpen, setMenuOpen }: NavbarProps) {
                 type="button"
                 onClick={() => {
                   setMenuOpen(false);
-                  supabase.auth.signOut();
+                  handleLogout(); // use the new function
                 }}
               >
                 Logout
