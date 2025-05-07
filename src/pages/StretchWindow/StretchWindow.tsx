@@ -11,7 +11,11 @@ import { getJsonFilenameFromLabel } from '../../lib/utils/format';
 
 import './StretchWindow.scss';
 
-const StretchWindow = () => {
+interface StretchWindowProps {
+  demoMode: boolean;
+}
+
+const StretchWindow = ({ demoMode }: StretchWindowProps) => {
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -143,64 +147,134 @@ const StretchWindow = () => {
     });
   };
 
-  return (
-    <div className="stretch-window-container">
-      <h2>Stretch Tracking Window</h2>
+  useEffect(() => {
+    if (demoMode) return;
 
-      <div style={{ position: 'relative', width: '500px', height: '500px' }}>
-        <video
-          ref={videoRef}
-          width={500}
-          height={500}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            zIndex: 1,
-            transform: 'scaleX(-1)', // mirror view
-          }}
-          autoPlay
-          muted
-        />
-        <canvas
-          ref={canvasRef}
-          width={500}
-          height={500}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            zIndex: 2,
-            pointerEvents: 'none',
-          }}
-        />
+    const loadDataset = async () => {
+      const filename = getJsonFilenameFromLabel(stretchName);
+
+      try {
+        const res = await fetch(`/knn-data/${filename}`);
+        if (!res.ok) throw new Error(`Missing file: ${filename}`);
+        const json = await res.json();
+        loadClassifierFromJSON(json);
+      } catch (err) {
+        console.warn(
+          `⚠️ No dataset found for: ${stretchName}. Skipping prediction.`,
+          err
+        );
+      }
+    };
+
+    loadDataset();
+  }, [demoMode, stretchName]);
+
+  if (demoMode) {
+    return (
+      <div className="stretch-window-container">
+        <h2>Try a Demo Stretch!</h2>
+
+        <div style={{ position: 'relative', width: '500px', height: '500px' }}>
+          <video
+            ref={videoRef}
+            width={500}
+            height={500}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              zIndex: 1,
+              transform: 'scaleX(-1)',
+            }}
+            autoPlay
+            muted
+          />
+          <canvas
+            ref={canvasRef}
+            width={500}
+            height={500}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              zIndex: 2,
+              pointerEvents: 'none',
+            }}
+          />
+        </div>
+
+        <div id="label-container">
+          <h3 className="status">
+            {modelLoaded ? 'Live pose detection active!' : 'Loading models...'}
+          </h3>
+          <p>This is a sample stretch to show how the app works.</p>
+
+          <button className="button-status" onClick={() => navigate('/signup')}>
+            Try More – Sign Up
+          </button>
+        </div>
       </div>
+    );
+  } else {
+    return (
+      <div className="stretch-window-container">
+        <h2>Stretch Tracking Window</h2>
 
-      <div id="label-container">
-        <h3 className="status">
-          {modelLoaded ? 'Pose detection active!' : 'Loading models...'}
-        </h3>
-        <h3
-          className={`feedback ${
-            feedback.includes('✅')
-              ? 'success'
-              : feedback.includes('❌')
-              ? 'error'
-              : ''
-          }`}
-        >
-          {feedback}
-        </h3>
+        <div style={{ position: 'relative', width: '500px', height: '500px' }}>
+          <video
+            ref={videoRef}
+            width={500}
+            height={500}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              zIndex: 1,
+              transform: 'scaleX(-1)', // mirror view
+            }}
+            autoPlay
+            muted
+          />
+          <canvas
+            ref={canvasRef}
+            width={500}
+            height={500}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              zIndex: 2,
+              pointerEvents: 'none',
+            }}
+          />
+        </div>
 
-        <button
-          className="button-status"
-          onClick={() => navigate('/stretches')}
-        >
-          Back to Stretches
-        </button>
+        <div id="label-container">
+          <h3 className="status">
+            {modelLoaded ? 'Pose detection active!' : 'Loading models...'}
+          </h3>
+          <h3
+            className={`feedback ${
+              feedback.includes('✅')
+                ? 'success'
+                : feedback.includes('❌')
+                ? 'error'
+                : ''
+            }`}
+          >
+            {feedback}
+          </h3>
+
+          <button
+            className="button-status"
+            onClick={() => navigate('/stretches')}
+          >
+            Back to Stretches
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 export default StretchWindow;

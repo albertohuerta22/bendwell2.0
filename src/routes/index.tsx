@@ -10,9 +10,14 @@ import TrainingWindow from '../pages/TrainingWindow/TrainingWindow';
 import Routines from '../pages/Routines/Routines';
 import SingleRoutine from '../pages/Routines/SingleRoutine';
 
+//special routes
+import ProtectedRoute from './ProtectedRoute';
+import AdminRoute from './AdminRoute';
+
 const AppRoutes = () => {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<SignUp />} />
       <Route
@@ -21,12 +26,56 @@ const AppRoutes = () => {
       />
       <Route path="/login" element={<Login />} />
       <Route path="/stretches" element={<AllStretches />} />
+      <Route
+        path="/stretchwindow"
+        element={<StretchWindow demoMode={true} />}
+      />
       <Route path="/stretches/:id" element={<SingleStretch />} />
 
-      <Route path="/stretchwindow" element={<StretchWindow />} />
-      <Route path="/trainingwindow" element={<TrainingWindow />} />
-      <Route path="/routines" element={<Routines />} />
-      <Route path="/routines/:id" element={<SingleRoutine />} />
+      {/* Protected Routes*/}
+
+      <Route
+        path="/stretchwindow"
+        element={
+          <ProtectedRoute>
+            <StretchWindow demoMode={false} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/trainingwindow"
+        element={
+          <ProtectedRoute>
+            <TrainingWindow />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/routines"
+        element={
+          <ProtectedRoute>
+            <Routines />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/routines/:id"
+        element={
+          <ProtectedRoute>
+            <SingleRoutine />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin Routes*/}
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <div>Place holder for Admin</div>
+          </AdminRoute>
+        }
+      />
     </Routes>
   );
 };
