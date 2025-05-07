@@ -2,6 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../../lib/supabase';
 
+//services
+import {
+  getUserRoutines,
+  addRoutine,
+  renameRoutine,
+  deleteRoutine,
+} from '../../services/pages/routines/RoutineSerivce';
+
+//global modal, find on index.html
 import RoutineEditorModal from '../../components/Modals/RoutineEditorModal/RoutineEditorModal';
 
 import './Routines.scss';
@@ -51,13 +60,8 @@ const Routines = () => {
 
       if (user) {
         setUserId(user.id);
-        const { data, error } = await supabase
-          .from('routines')
-          .select('*, stretchRoutines(stretches(*))')
-          .eq('userId', user.id);
-
-        if (error) console.error(error);
-        else {
+        try {
+          const data = await getUserRoutines(user.id);
           const formatted = (data as RawRoutine[]).map((r) => ({
             ...r,
             stretches: r.stretchRoutines.map((sr) => sr.stretches),
@@ -66,6 +70,8 @@ const Routines = () => {
           const nameMap: { [key: string]: string } = {};
           formatted.forEach((r) => (nameMap[r.id] = r.name));
           setRoutineNames(nameMap);
+        } catch (err) {
+          console.error(err);
         }
       }
     };
@@ -75,38 +81,33 @@ const Routines = () => {
 
   const handleAddRoutine = async () => {
     if (!userId) return;
-    const { data, error } = await supabase
-      .from('routines')
-      .insert({ userId: userId, name: 'New Routine', notes: '' })
-      .select();
 
-    if (error) return console.error(error);
-    setRoutines((prev) => [...prev, ...(data as Routine[])]);
+    try {
+      const data = await addRoutine(userId);
+      setRoutines((prev) => [...prev, ...(data as Routine[])]);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleRename = async (routineId: string, newName: string) => {
-    const { error } = await supabase
-      .from('routines')
-      .update({ name: newName })
-      .eq('id', routineId);
-
-    if (error) return console.error(error);
-
-    setRoutines((prev) =>
-      prev.map((r) => (r.id === routineId ? { ...r, name: newName } : r))
-    );
+    try {
+      await renameRoutine(routineId, newName);
+      setRoutines((prev) =>
+        prev.map((r) => (r.id === routineId ? { ...r, name: newName } : r))
+      );
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleDeleteRoutine = async (routineId: string) => {
-    const { error } = await supabase
-      .from('routines')
-      .delete()
-      .eq('id', routineId);
-    if (!error) {
+    try {
+      await deleteRoutine(routineId);
       setRoutines((prev) => prev.filter((r) => r.id !== routineId));
       setRoutineToDelete(null);
-    } else {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
   };
 

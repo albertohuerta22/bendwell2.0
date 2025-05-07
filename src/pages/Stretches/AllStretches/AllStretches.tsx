@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import supabase from '../../../lib/supabase';
+
+//services
+import {
+  fetchAllStretches,
+  fetchUserRoutines,
+  addStretchToRoutine,
+} from '../../../services/pages/stretches/AllStretchesService';
 
 import './AllStretches.scss';
 
@@ -25,11 +31,11 @@ const AllStretches = () => {
 
   useEffect(() => {
     const fetchStretches = async () => {
-      const { data, error } = await supabase.from('stretches').select('*');
-      if (error) {
-        console.error('Error fetching stretches:', error.message);
-      } else {
+      try {
+        const data = await fetchAllStretches();
         setStretches(data || []);
+      } catch (err) {
+        console.error('Failed to fetch stretches', err);
       }
     };
 
@@ -38,19 +44,41 @@ const AllStretches = () => {
 
   useEffect(() => {
     const fetchUserAndRoutines = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        const { data, error } = await supabase
-          .from('routines')
-          .select('*')
-          .eq('userId', user.id);
-        if (!error && data) setUserRoutines(data as Routine[]);
+      try {
+        const routines = await fetchUserRoutines();
+        setUserRoutines(routines);
+      } catch (err) {
+        console.error('Error fetching user routines: ', err);
       }
     };
     fetchUserAndRoutines();
   }, []);
+
+  const handleAddStretch = async (stretchId: string) => {
+    const routineId = selectedRoutineMap[stretchId];
+    if (!routineId) {
+      alert('Please select a routine first.');
+      return;
+    }
+
+    try {
+      await addStretchToRoutine(stretchId, routineId);
+      alert('Stretch added!');
+      setSelectedRoutineMap((prev) => ({
+        ...prev,
+        [stretchId]: '', // reset to default
+      }));
+    } catch (err) {
+      console.error('Error adding to routine:', err);
+    }
+  };
+
+  const handleSelectRoutineChange = (stretchId: string, routineId: string) => {
+    setSelectedRoutineMap((prev) => ({
+      ...prev,
+      [stretchId]: routineId,
+    }));
+  };
 
   return (
     <div className="stretch-container">
@@ -71,10 +99,7 @@ const AllStretches = () => {
               id={`select-${stretch.id}`}
               value={selectedRoutineMap[stretch.id] || ''}
               onChange={(e) =>
-                setSelectedRoutineMap((prev) => ({
-                  ...prev,
-                  [stretch.id]: e.target.value,
-                }))
+                handleSelectRoutineChange(stretch.id, e.target.value)
               }
             >
               <option value="" disabled>
@@ -87,31 +112,7 @@ const AllStretches = () => {
               ))}
             </select>
 
-            <button
-              onClick={async () => {
-                const routineId = selectedRoutineMap[stretch.id];
-                if (!routineId) {
-                  alert('Please select a routine first.');
-                  return;
-                }
-
-                const { error } = await supabase
-                  .from('stretchRoutines')
-                  .insert({
-                    stretchId: stretch.id,
-                    routineId,
-                  });
-
-                if (error) console.error('Error adding to routine:', error);
-                else {
-                  alert('Stretch added!');
-                  setSelectedRoutineMap((prev) => ({
-                    ...prev,
-                    [stretch.id]: '', // reset to default
-                  }));
-                }
-              }}
-            >
+            <button onClick={() => handleAddStretch(stretch.id)}>
               Add Stretch
             </button>
           </div>

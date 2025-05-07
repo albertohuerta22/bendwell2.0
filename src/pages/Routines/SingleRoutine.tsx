@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import supabase from '../../lib/supabase';
+
+//services
+import {
+  fetchRoutineById,
+  deleteStretchFromRoutine,
+  updateRoutineField,
+} from '../../services/pages/routines/SingleRoutineService';
+
 import './SingleRoutine.scss';
 
 interface Stretch {
@@ -29,59 +36,69 @@ const SingleRoutine = () => {
 
   useEffect(() => {
     const fetchRoutine = async () => {
-      const { data, error } = await supabase
-        .from('routines')
-        .select('id, name, notes, stretchRoutines(stretches(*))')
-        .eq('id', routineId)
-        .single();
+      if (!routineId) {
+        console.error('Routine ID is missing.');
+        return;
+      }
 
-      if (error) return console.error(error);
-
-      const stretches = (data.stretchRoutines as StretchRoutineJoin[]).flatMap(
-        (sr) => (Array.isArray(sr.stretches) ? sr.stretches : [sr.stretches])
-      );
-
-      setRoutine({
-        id: data.id,
-        name: data.name,
-        notes: data.notes,
-        stretches,
-      });
-      setLoading(false);
+      try {
+        const data = await fetchRoutineById(routineId);
+        const stretches = (
+          data.stretchRoutines as StretchRoutineJoin[]
+        ).flatMap((sr) =>
+          Array.isArray(sr.stretches) ? sr.stretches : [sr.stretches]
+        );
+        setRoutine({
+          id: data.id,
+          name: data.name,
+          notes: data.notes,
+          stretches,
+        });
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+      }
     };
 
     if (routineId) fetchRoutine();
   }, [routineId]);
 
   const handleDeleteStretch = async (stretchId: string) => {
-    const { error } = await supabase
-      .from('stretchRoutines')
-      .delete()
-      .match({ routineId, stretchId });
+    if (!routineId) {
+      console.error('Routine ID is missing.');
+      return;
+    }
 
-    if (error) return console.error(error);
-    setRoutine((prev) =>
-      prev
-        ? {
-            ...prev,
-            stretches: prev.stretches.filter((s) => s.id !== stretchId),
-          }
-        : null
-    );
+    try {
+      await deleteStretchFromRoutine(routineId, stretchId);
+      setRoutine((prev) =>
+        prev
+          ? {
+              ...prev,
+              stretches: prev.stretches.filter((s) => s.id !== stretchId),
+            }
+          : null
+      );
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleUpdateDetails = async (
     field: 'name' | 'notes',
     value: string
   ) => {
-    const { error } = await supabase
-      .from('routines')
-      .update({ [field]: value })
-      .eq('id', routineId);
+    if (!routineId) {
+      console.error('Routine ID is missing.');
+      return;
+    }
 
-    if (error) return console.error(error);
-
-    setRoutine((prev) => (prev ? { ...prev, [field]: value } : null));
+    try {
+      await updateRoutineField(routineId, field, value);
+      setRoutine((prev) => (prev ? { ...prev, [field]: value } : null));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   if (loading || !routine) return <p>Loading...</p>;
