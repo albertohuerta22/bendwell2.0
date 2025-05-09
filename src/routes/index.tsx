@@ -1,8 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home/Home';
-import SignUp from '../pages/Auth/SignUp';
+import SignUp from '../pages/Auth/Signup/SignUp';
 import CompleteAccount from '../pages/Auth/CompleteAccount';
-import Login from '../pages/Auth/Login';
+import Login from '../pages/Auth/Login/Login';
 import AllStretches from '../pages/Stretches/AllStretches/AllStretches';
 import SingleStretch from '../pages/Stretches/SingleStretch/SingleStretch';
 import StretchWindow from '../pages/StretchWindow/StretchWindow';
