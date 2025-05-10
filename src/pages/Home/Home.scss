@@ -6,11 +6,12 @@
 
     display: flex;
     background-color: $color-background;
-    height: 880px;
+    min-height: 100vh;
+    align-items: stretch;
 
     &-img {
       width: 50vw;
-      // height: 100vh;
+      height: 100%;
       height: calc(100vh - 64px);
       object-fit: cover;
       border-top-right-radius: 220px;
