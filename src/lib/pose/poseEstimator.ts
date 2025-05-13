@@ -15,6 +15,11 @@ export async function initDetector() {
     }
   );
 
+  /*const detector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, {
+  runtime: 'tfjs',
+  modelType: 'lightning'
+}); */
+
   console.log('TFJS backend:', tf.getBackend());
 }
 

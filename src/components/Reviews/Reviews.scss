@@ -1,0 +1,81 @@
+@use '../../styles/index.scss' as *;
+
+.testimonial-carousel {
+  padding: 4rem 2rem;
+  background-color: $color-background;
+  text-align: center;
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    color: $color-heading;
+  }
+
+  .swiper {
+    max-width: 50%;
+    margin: 0 auto;
+    padding-bottom: 3rem;
+  }
+
+  .swiper-slide {
+    display: flex;
+    justify-content: center;
+  }
+
+  .review-group {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem; // spacing between review cards
+    flex-wrap: wrap;
+  }
+
+  .testimonial-card {
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    max-width: 320px;
+    flex: 1 1 300px;
+    text-align: left;
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .stars {
+      color: #ffc107;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.95rem;
+      color: #444;
+      line-height: 1.5;
+    }
+  }
+
+  .swiper-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 2rem;
+  }
+
+  .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background-color: $color-tertiary;
+    opacity: 0.5;
+    border-radius: 50%;
+    transition: opacity 0.3s;
+
+    &-active {
+      opacity: 1;
+    }
+  }
+}

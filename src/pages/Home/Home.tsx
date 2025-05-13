@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-// import StretchGraphic from '../../components/StretchGraphic/StretchGraphic';
+import Reviews from '../../components/Reviews/Reviews';
 import './Home.scss';
 
 const Home = () => {
@@ -24,6 +24,8 @@ const Home = () => {
               Start Stretching
             </button>
           </div>
+
+          <Reviews />
         </div>
       </section>
 
