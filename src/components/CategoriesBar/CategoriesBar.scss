@@ -1,6 +1,12 @@
+.categories-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .categories-bar {
-  display: flex; /* make nav a flex container */
-  justify-content: center; /* center the <ul> when it’s narrower */
+  display: flex;
+  justify-content: center;
   overflow-x: auto;
   padding: 8px 24px;
   background-color: #f5f5f5;
@@ -11,8 +17,6 @@
     list-style: none;
     margin: 0;
     padding: 0;
-
-    /* allow it to shrink or grow but center its contents */
     flex: 0 1 auto;
     justify-content: center;
   }
@@ -20,21 +24,84 @@
   .category-item {
     flex: 0 0 auto;
 
-    a {
+    .category-button {
       display: block;
       padding: 8px 16px;
       border-radius: 20px;
       background-color: #ffffff;
+      border: 2px solid transparent;
       text-decoration: none;
       color: #333333;
       font-weight: 500;
       white-space: nowrap;
-      transition: background-color 150ms ease, color 150ms ease;
+      transition: all 150ms ease;
+      cursor: pointer;
 
       &:hover {
-        background-color: #00c853; /* accent color */
-        color: #ffffff;
+        background-color: #e8f5e9;
+        border-color: #00c853;
+        color: #00c853;
       }
+
+      &.active {
+        background-color: #00c853;
+        color: #ffffff;
+        border-color: #00c853;
+      }
+    }
+  }
+}
+
+.selected-categories {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+
+  .selected-categories-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .category-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background-color: #e8f5e9;
+    border: 1px solid #00c853;
+    border-radius: 16px;
+    color: #00c853;
+    font-size: 14px;
+
+    .remove-category {
+      background: none;
+      border: none;
+      color: #00c853;
+      font-size: 18px;
+      line-height: 1;
+      padding: 0 2px;
+      cursor: pointer;
+      transition: color 150ms ease;
+
+      &:hover {
+        color: #d32f2f;
+      }
+    }
+  }
+
+  .clear-all {
+    background: none;
+    border: none;
+    color: #666666;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 150ms ease;
+
+    &:hover {
+      color: #d32f2f;
     }
   }
 }

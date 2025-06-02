@@ -1,7 +1,15 @@
 import React from 'react';
 import './WeekTracker.scss';
 
-const days = ['M', 'T', 'W', 'TH', 'F', 'S', 'SU'];
+const days = [
+  { key: 'mon', label: 'M' },
+  { key: 'tue', label: 'T' },
+  { key: 'wed', label: 'W' },
+  { key: 'thu', label: 'TH' },
+  { key: 'fri', label: 'F' },
+  { key: 'sat', label: 'S' },
+  { key: 'sun', label: 'SU' },
+];
 
 interface WeekTrackerProps {
   // Optional: an object mapping day index (0-6) to boolean active
@@ -13,10 +21,10 @@ const WeekTracker: React.FC<WeekTrackerProps> = ({ activeDays = {} }) => {
     <div className="week-tracker">
       {days.map((day, idx) => (
         <div
-          key={day}
+          key={day.key}
           className={`day-circle ${activeDays[idx] ? 'active' : ''}`}
         >
-          {day}
+          {day.label}
         </div>
       ))}
     </div>

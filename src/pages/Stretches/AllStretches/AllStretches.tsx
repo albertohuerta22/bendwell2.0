@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom';
 
 import WeekTracker from '../../../components/WeekTracker/WeekTracker';
 import CategoriesBar from '../../../components/CategoriesBar/CategoriesBar';
+import { Category } from '../../../components/CategoriesBar/categories';
 import Sidebar from '../../../components/SideBar/SideBar';
+import Welcome from '../../../components/Welcome/Welcome';
 
 //services
 import {
@@ -32,6 +34,7 @@ const AllStretches = () => {
   const [selectedRoutineMap, setSelectedRoutineMap] = useState<{
     [stretchId: string]: string;
   }>({});
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,7 +44,6 @@ const AllStretches = () => {
       setError(null);
       try {
         const data = await fetchAllStretches();
-
         setStretches(data || []);
       } catch (err) {
         const errorMessage =
@@ -94,26 +96,50 @@ const AllStretches = () => {
     }));
   };
 
+  const handleCategoryClick = (category: Category) => {
+    setSelectedCategories((prev) => {
+      if (prev.includes(category.value)) {
+        return prev.filter((c) => c !== category.value);
+      }
+      return [...prev, category.value];
+    });
+  };
+
+  const handleRemoveCategory = (categoryValue: string) => {
+    setSelectedCategories((prev) => prev.filter((c) => c !== categoryValue));
+  };
+
+  const filteredStretches = stretches.filter((stretch) => {
+    if (selectedCategories.length === 0) return true;
+    return selectedCategories.includes(stretch.target.toLowerCase());
+  });
+
   return (
     <div className="all-stretches-page">
+      <Welcome />
       <div className="week-tracker-container">
         <WeekTracker />
       </div>
 
       <div className="categories-bar-container">
-        <CategoriesBar />
+        <CategoriesBar
+          selectedCategories={selectedCategories}
+          onCategoryClick={handleCategoryClick}
+          onRemoveCategory={handleRemoveCategory}
+        />
       </div>
       <div className="main-content-wrapper">
         <div className="stretch-container">
           {isLoading && <div>Loading stretches...</div>}
           {error && <div style={{ color: 'red' }}>Error: {error}</div>}
-          {!isLoading && !error && stretches.length === 0 && (
+          {!isLoading && !error && filteredStretches.length === 0 && (
             <div>
-              No stretches found. Please make sure you're connected to the
-              database.
+              {stretches.length === 0
+                ? "No stretches found. Please make sure you're connected to the database."
+                : 'No stretches match the selected categories.'}
             </div>
           )}
-          {stretches.map((stretch) => (
+          {filteredStretches.map((stretch) => (
             <div className="stretch-preview" key={stretch.id}>
               <div className="stretch-content">
                 <Link to={`/stretches/${stretch.id}`}>
