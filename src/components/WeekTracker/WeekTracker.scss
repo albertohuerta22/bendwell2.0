@@ -1,0 +1,31 @@
+/* src/components/WeekTracker/WeekTracker.scss */
+.week-tracker {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 24px;
+  max-width: 600px;
+  margin: 0 auto;
+
+  .day-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 0 4px; /* small gap between circles */
+    border: 2px solid #888888; /* darker border so you actually see the circle */
+    background-color: transparent;
+    border-radius: 50%;
+    font-weight: 500;
+    color: #333333;
+    cursor: default;
+    transition: background-color 150ms ease, border-color 150ms ease,
+      color 150ms ease;
+
+    &.active {
+      background-color: #00c853; /* your accent green */
+      border-color: #00c853;
+      color: #ffffff;
+    }
+  }
+}

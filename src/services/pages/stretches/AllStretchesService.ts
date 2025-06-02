@@ -1,7 +1,10 @@
 import supabase from '../../../lib/supabase';
 
 export const fetchAllStretches = async () => {
-  const { data, error } = await supabase.from('stretches').select('*');
+  const { data, error } = await supabase
+    .from('stretches')
+    .select('id, name, target, stretchimages');
+
   if (error) throw new Error(error.message);
   return data || [];
 };

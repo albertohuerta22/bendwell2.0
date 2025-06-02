@@ -1,5 +1,42 @@
 @use '../../../styles/index.scss' as *;
 
+.all-stretches-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .week-tracker-container {
+    /* centers the week tracker */
+    display: flex;
+    justify-content: center;
+  }
+
+  .categories-bar-container {
+    /* full-width scroller */
+    width: 100%;
+  }
+
+  .main-content-wrapper {
+    display: flex;
+    padding: 0 24px;
+    gap: 24px;
+
+    .stretch-container {
+      /* your original styles unchanged */
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: space-evenly;
+    }
+
+    .sidebar-container {
+      /* width for sidebar */
+      flex: 0 0 200px;
+    }
+  }
+}
+
 .stretch-container {
   display: flex;
   flex-direction: row;

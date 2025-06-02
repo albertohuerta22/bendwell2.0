@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import WeekTracker from '../../../components/WeekTracker/WeekTracker';
+import CategoriesBar from '../../../components/CategoriesBar/CategoriesBar';
+import Sidebar from '../../../components/SideBar/SideBar';
+
 //services
 import {
   fetchAllStretches,
@@ -28,14 +32,24 @@ const AllStretches = () => {
   const [selectedRoutineMap, setSelectedRoutineMap] = useState<{
     [stretchId: string]: string;
   }>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStretches = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
         const data = await fetchAllStretches();
+
         setStretches(data || []);
       } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to fetch stretches';
         console.error('Failed to fetch stretches', err);
+        setError(errorMessage);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -81,43 +95,65 @@ const AllStretches = () => {
   };
 
   return (
-    <div className="stretch-container">
-      {stretches.map((stretch) => (
-        <div className="stretch-preview" key={stretch.id}>
-          <div className="stretch-content">
-            <Link to={`/stretches/${stretch.id}`}>
-              <img src={stretch.stretchimages} alt={`${stretch.name}`} />
-              <div className="stretch-content-text">
-                <h2>{stretch.name}</h2>
-                <h3>{`Target: ${stretch.target}`}</h3>
-              </div>
-            </Link>
-          </div>
-          <div className="add-to-routine">
-            <label htmlFor={`select-${stretch.id}`}>Add to routine:</label>
-            <select
-              id={`select-${stretch.id}`}
-              value={selectedRoutineMap[stretch.id] || ''}
-              onChange={(e) =>
-                handleSelectRoutineChange(stretch.id, e.target.value)
-              }
-            >
-              <option value="" disabled>
-                Select routine
-              </option>
-              {userRoutines.map((routine) => (
-                <option key={routine.id} value={routine.id}>
-                  {routine.name}
-                </option>
-              ))}
-            </select>
+    <div className="all-stretches-page">
+      <div className="week-tracker-container">
+        <WeekTracker />
+      </div>
 
-            <button onClick={() => handleAddStretch(stretch.id)}>
-              Add Stretch
-            </button>
-          </div>
+      <div className="categories-bar-container">
+        <CategoriesBar />
+      </div>
+      <div className="main-content-wrapper">
+        <div className="stretch-container">
+          {isLoading && <div>Loading stretches...</div>}
+          {error && <div style={{ color: 'red' }}>Error: {error}</div>}
+          {!isLoading && !error && stretches.length === 0 && (
+            <div>
+              No stretches found. Please make sure you're connected to the
+              database.
+            </div>
+          )}
+          {stretches.map((stretch) => (
+            <div className="stretch-preview" key={stretch.id}>
+              <div className="stretch-content">
+                <Link to={`/stretches/${stretch.id}`}>
+                  <img src={stretch.stretchimages} alt={`${stretch.name}`} />
+                  <div className="stretch-content-text">
+                    <h2>{stretch.name}</h2>
+                    <h3>{`Target: ${stretch.target}`}</h3>
+                  </div>
+                </Link>
+              </div>
+              <div className="add-to-routine">
+                <label htmlFor={`select-${stretch.id}`}>Add to routine:</label>
+                <select
+                  id={`select-${stretch.id}`}
+                  value={selectedRoutineMap[stretch.id] || ''}
+                  onChange={(e) =>
+                    handleSelectRoutineChange(stretch.id, e.target.value)
+                  }
+                >
+                  <option value="" disabled>
+                    Select routine
+                  </option>
+                  {userRoutines.map((routine) => (
+                    <option key={routine.id} value={routine.id}>
+                      {routine.name}
+                    </option>
+                  ))}
+                </select>
+
+                <button onClick={() => handleAddStretch(stretch.id)}>
+                  Add Stretch
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+        <div className="sidebar-container">
+          <Sidebar />
+        </div>
+      </div>
     </div>
   );
 };
